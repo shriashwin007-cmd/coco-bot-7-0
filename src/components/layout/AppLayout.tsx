@@ -1,62 +1,113 @@
-import { useEffect, useState } from 'react'
-import { Outlet, useLocation, Link } from 'react-router-dom'
-import { Leaf, FlaskConical } from 'lucide-react'
-import Sidebar from './Sidebar'
+import { useState } from 'react'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Sprout, Menu, X, FlaskConical } from 'lucide-react'
+
+const nav = [
+  { to: '/', label: 'Home', end: true },
+  { to: '/doctor', label: 'AI Plant Doctor' },
+  { to: '/dashboard', label: 'Farm Dashboard' },
+  { to: '/robot', label: 'Virtual COCO BOT' },
+  { to: '/history', label: 'Scan History' },
+  { to: '/about', label: 'About' },
+]
 
 const titles: Record<string, { title: string; subtitle: string }> = {
-  '/dashboard': { title: 'Command Center', subtitle: 'Operational overview of street cleanliness' },
-  '/scanner': { title: 'AI Street Scanner', subtitle: 'Upload and analyze street imagery' },
+  '/doctor': { title: 'AI Plant Doctor', subtitle: 'Upload a leaf photo for a real AI health reading' },
+  '/dashboard': { title: 'Farm Dashboard', subtitle: 'Statistics computed from your saved scans' },
+  '/robot': { title: 'Virtual COCO BOT', subtitle: 'Simulated hardware concept — no real devices connected' },
   '/history': { title: 'Scan History', subtitle: 'Search and review past analyses' },
-  '/reports': { title: 'Waste Reports', subtitle: 'Track and resolve sanitation reports' },
-  '/about': { title: 'About TrashBots', subtitle: 'Platform, stack and integration guide' },
+  '/about': { title: 'About COCO BOT 7.0', subtitle: 'Proposed invention and sustainability goals' },
 }
 
 export default function AppLayout() {
-  const [collapsed, setCollapsed] = useState(false)
+  const [open, setOpen] = useState(false)
   const location = useLocation()
   const isHome = location.pathname === '/'
-  const meta = titles[location.pathname] ?? { title: 'TrashBots', subtitle: '' }
-
-  useEffect(() => {
-    const stored = localStorage.getItem('trashbots_sidebar_collapsed')
-    if (stored) setCollapsed(stored === 'true')
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem('trashbots_sidebar_collapsed', String(collapsed))
-  }, [collapsed])
-
-  if (isHome) return <Outlet />
+  const meta = titles[location.pathname] ?? { title: 'COCO BOT 7.0', subtitle: '' }
 
   return (
-    <div className="flex h-screen overflow-hidden text-[#F5F7F6]">
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((c) => !c)} />
-      <div className="flex flex-1 flex-col overflow-hidden min-w-0">
-        <header className="flex items-center justify-between gap-4 border-b border-[#223027] bg-[#0F1512]/80 backdrop-blur px-6 py-4">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 text-xs text-[#6B7280]">
-              <Link to="/" className="hover:text-[#B7F34A] transition-colors flex items-center gap-1">
-                <Leaf className="h-3 w-3" /> TrashBots
-              </Link>
-              <span>/</span>
-              <span className="truncate">{meta.title}</span>
-            </div>
-            <h1 className="mt-1 text-lg font-semibold tracking-tight truncate">{meta.title}</h1>
-          </div>
-          <div className="flex items-center gap-3 text-sm text-[#9CA3AF] shrink-0">
-            <span className="hidden sm:inline tabular-nums">{new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</span>
-            <span className="clay-badge rounded-full border border-[#F59E0B4D] bg-[#F59E0B1A] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#F59E0B] flex items-center gap-1.5">
-              <FlaskConical className="h-3 w-3" />
-              Demo Environment
+    <div className="min-h-screen text-[#F5F7F6]">
+      <header className="sticky top-0 z-40 border-b border-[#223027] bg-[#0B0F0D]/85 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <Link to="/" className="flex items-center gap-2.5">
+            <span className="clay-icon-tile flex h-9 w-9 items-center justify-center">
+              <Sprout className="h-5 w-5 text-[#B7F34A]" />
+            </span>
+            <span className="leading-tight">
+              <span className="block text-sm font-bold tracking-wide">COCO BOT 7.0</span>
+              <span className="block text-[11px] text-[#9CA3AF]">Smart Autonomous Crop Guardian</span>
+            </span>
+          </Link>
+          <nav className="hidden items-center gap-1 lg:flex">
+            {nav.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                className={({ isActive }) =>
+                  `rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
+                    isActive ? 'clay-nav-active text-[#B7F34A]' : 'text-[#D1D5DB] hover:text-white'
+                  }`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+          <div className="hidden items-center gap-2 lg:flex">
+            <span className="clay-badge inline-flex items-center gap-1.5 rounded-full border border-[#F59E0B4D] bg-[#F59E0B1A] px-3 py-1 text-[11px] font-semibold text-[#F59E0B]">
+              <FlaskConical className="h-3 w-3" /> Software demo — no hardware
             </span>
           </div>
-        </header>
-        <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-7xl p-6">
-            <Outlet />
+          <button
+            className="clay-btn clay-btn-secondary p-2 lg:hidden"
+            onClick={() => setOpen((o) => !o)}
+            aria-label="Toggle navigation"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+        {open && (
+          <nav className="border-t border-[#223027] px-4 py-3 lg:hidden">
+            <div className="grid gap-1">
+              {nav.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    `rounded-xl px-3 py-2.5 text-sm font-medium ${
+                      isActive ? 'clay-nav-active text-[#B7F34A]' : 'text-[#D1D5DB]'
+                    }`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
+          </nav>
+        )}
+      </header>
+
+      {isHome ? (
+        <Outlet />
+      ) : (
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+          <div className="mb-6">
+            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{meta.title}</h1>
+            <p className="mt-1 text-sm text-[#9CA3AF]">{meta.subtitle}</p>
           </div>
+          <Outlet />
         </main>
-      </div>
+      )}
+
+      <footer className="border-t border-[#223027] py-6">
+        <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 text-xs text-[#6B7280] sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <span>COCO BOT 7.0 — software demonstration. AI readings come from leaf-photo analysis; sensor + pump panels are simulated.</span>
+          <span>Healthy vs needs-inspection only. No specific diseases diagnosed.</span>
+        </div>
+      </footer>
     </div>
   )
 }

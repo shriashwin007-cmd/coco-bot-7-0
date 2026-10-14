@@ -1,4 +1,4 @@
-import type { Cleanliness, Severity } from '../types'
+import type { AnalysisSource, PlantStatus } from '../types'
 
 export function formatDate(iso: string): string {
   try {
@@ -8,28 +8,19 @@ export function formatDate(iso: string): string {
   }
 }
 
-export function formatCleanliness(value: Cleanliness): string {
-  switch (value) {
-    case 'clean':
-      return 'Clean'
-    case 'moderately_littered':
-      return 'Moderately Littered'
-    case 'heavily_littered':
-      return 'Heavily Littered'
-  }
+export function formatStatus(value: PlantStatus): string {
+  return value === 'healthy' ? 'Healthy' : 'Needs inspection'
 }
 
-export function formatSeverity(value: Severity): string {
-  return value.charAt(0).toUpperCase() + value.slice(1)
+export function formatScore(score: number | null): string {
+  if (score === null || !Number.isFinite(score)) return '—'
+  return `${Math.round(score * 100)}%`
 }
 
-export function cleanlinessColor(value: Cleanliness): string {
-  switch (value) {
-    case 'clean':
-      return 'text-[#B7F34A]'
-    case 'moderately_littered':
-      return 'text-amber-400'
-    case 'heavily_littered':
-      return 'text-red-400'
-  }
+export function statusColor(value: PlantStatus): string {
+  return value === 'healthy' ? 'text-[#B7F34A]' : 'text-[#F59E0B]'
+}
+
+export function sourceLabel(source: AnalysisSource): string {
+  return source === 'REAL AI' ? 'REAL AI' : 'DEMO'
 }

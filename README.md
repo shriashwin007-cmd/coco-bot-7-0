@@ -1,69 +1,57 @@
-# TrashBots
+# COCO BOT 7.0 — Smart Autonomous Crop Guardian (software demonstration)
 
-AI-powered smart waste management demonstration platform.
+AI-powered crop monitoring + plant disease screening demo. Upload a leaf photo,
+get an honest **healthy / needs-inspection** reading with explanation, save
+reports, and explore the farm dashboard, scan history, and a simulated field
+robot. No physical hardware is connected.
 
 ## Prerequisites
-- Node.js 20+ and npm 10+
-- (Optional) A Python FastAPI AI service exposing POST /analyze
 
-## Installation
-```bash
-npm install
-```
+- **Node.js 20+** and npm 10+ ([nodejs.org](https://nodejs.org)) — for the website
+- **Python 3.10+** — for the AI backend (already on most Windows machines)
 
-## Development (website only, demo mode)
-```bash
-npm run dev
-```
-Opens the app at http://localhost:5173
-
-## Real AI backend (Step 2)
-
-The `backend/` folder contains a Python FastAPI server using the real pretrained
-**CLIP ViT-B/32** vision model for street-cleanliness classification.
+## 1 · Run the website (demo mode)
 
 ```bat
-REM Terminal 1 — double-click or run:
-backend\start-ai.bat
-REM Terminal 2:
+npm install
 npm run dev
 ```
 
-Then upload a street photo in the AI Scanner — results tagged **REAL AI** are
-genuine model predictions with real confidence scores. See `backend/README.md`
-for details. The website reads the backend URL from `.env`
-(see `.env.example`); without it, the site runs in clearly labelled demo mode.
+Open http://localhost:5173. Without the backend, use **Demo result** buttons —
+every demo output is badged **DEMO** and carries no model score.
+
+## 2 · Run the real AI backend
+
+Double-click **`backend\start-cocobot.bat`**, or manually:
+
+```bat
+cd backend
+python -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python -m uvicorn main:app --host 127.0.0.1 --port 8000
+```
+
+Keep that window open, then in a second terminal run `npm run dev`.
+Upload a leaf photo in **AI Plant Doctor** → **Analyze Plant**.
+Results tagged **REAL AI** show a genuine computed health index + pixel metrics.
+
+The website reads the backend URL from `.env` (see `.env.example`):
+
+```env
+VITE_AI_API_URL=http://localhost:8000
+```
 
 ## Production build
-```bash
+
+```bat
 npm run build
 npm run preview
 ```
 
-## Demo mode
-- Click "Load demonstration data" on the Dashboard (or "Load demonstration data" in empty states).
-- Click "Run Demo Scenario" to load sample scans, reports and hotspots.
-- Use "Run Demonstration Analysis" on the AI Scanner page to create a clearly labelled DEMO result.
-- "Clear demo data" removes only demonstration records.
+## Honesty rules (important for your presentation)
 
-## AI backend integration
-Set `VITE_AI_API_URL` in `.env` (see `.env.example`):
-```env
-VITE_AI_API_URL=http://localhost:8000
-```
-The frontend sends `multipart/form-data` with field `file` to `{VITE_AI_API_URL}/analyze` and validates the JSON response. If unavailable, a clear message is shown and no fake result is substituted.
-
-## Proposed API response
-```json
-{
-  "cleanliness": "clean | moderately_littered | heavily_littered",
-  "severity": "low | medium | high",
-  "explanation": "Description of the visible waste and street condition",
-  "waste_categories": [{ "name": "plastic bottle", "count": 2 }],
-  "confidence": null,
-  "recommended_action": "Suggested sanitation action"
-}
-```
-
-## Environment variables
-No API keys or secrets are stored in the frontend. Only `VITE_AI_API_URL`.
+- Supported labels: `healthy` and `needs_inspection` only — no specific diseases diagnosed.
+- `model_score` = leaf-greenness health index (visual vigour), not a disease probability.
+- Demo outputs are always badged DEMO with null score, kept separate from REAL AI.
+- Virtual COCO BOT sensor/pump panels are all marked SIMULATED; the run-cycle button only updates the simulation.
+- No `leaf_disease_model.h5` / `labels.txt` were present at build — see `backend/README.md` for the future-model hook.
