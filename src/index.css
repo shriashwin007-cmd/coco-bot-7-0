@@ -25,6 +25,10 @@ html, body, #root {
   height: 100%;
 }
 
+:root {
+  --ease-assembly: cubic-bezier(0.35, 0.35, 0, 1);
+}
+
 body {
   margin: 0;
   font-family: "Inter", system-ui, -apple-system, sans-serif;
@@ -86,7 +90,11 @@ body::after {
   gap: 0.5rem;
   border-radius: 999px;
   font-weight: 600;
-  transition: transform 0.15s ease, filter 0.15s ease, background 0.15s ease;
+  transition:
+    transform 0.9s var(--ease-assembly),
+    filter 0.9s var(--ease-assembly),
+    background-color 0.9s var(--ease-assembly),
+    background-position 0.9s var(--ease-assembly);
 }
 .pill:active:not(:disabled) {
   transform: translateY(1px) scale(0.99);
@@ -118,7 +126,7 @@ body::after {
   background: rgba(42, 31, 20, 0.22);
   color: #f4ecdd;
   backdrop-filter: blur(6px);
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background-color 0.9s var(--ease-assembly), color 0.9s var(--ease-assembly);
 }
 .tab-pill:hover {
   background: rgba(42, 31, 20, 0.34);
@@ -227,3 +235,103 @@ body::after {
 .animate-rise-3 { animation: rise 0.9s 0.26s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .animate-fade-in { animation: fade-in 0.25s ease-out both; }
 .animate-slide-up { animation: rise 0.4s ease-out both; }
+
+/* ——— Assembly motion language (after obsidianassembly.com) ——— */
+
+/* Per-character roll-up: the label slides up while a rotated, scaled
+   duplicate swings into its place. Parent needs .roll-hover. */
+.roll {
+  display: inline-flex;
+  white-space: nowrap;
+}
+.roll .ch {
+  position: relative;
+  display: inline-block;
+}
+.roll .ch .o,
+.roll .ch .d {
+  display: inline-block;
+  transition:
+    translate 0.6s var(--ease-assembly),
+    rotate 0.6s var(--ease-assembly),
+    scale 0.6s var(--ease-assembly);
+  transition-delay: calc(var(--i, 0) * 24ms);
+}
+.roll .ch .d {
+  position: absolute;
+  inset: 0;
+  translate: 0 105%;
+  rotate: 60deg;
+  scale: 1.5;
+}
+.roll-hover:hover .roll .ch .o,
+a:hover > .roll .ch .o {
+  translate: 0 -105%;
+}
+.roll-hover:hover .roll .ch .d,
+a:hover > .roll .ch .d {
+  translate: 0 0;
+  rotate: 0deg;
+  scale: 1;
+}
+
+/* Hamburger lines that redraw on hover, like the reference menu button */
+.menu-lines {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.menu-lines span {
+  display: block;
+  height: 2px;
+  background-image: linear-gradient(to right, #2a1f14 55%, rgba(42, 31, 20, 0.2) 55%);
+  background-size: 220% 100%;
+  background-position: 100% 0;
+  transition: background-position 0.9s var(--ease-assembly);
+}
+.menu-lines span:nth-child(1) { width: 1.9rem; }
+.menu-lines span:nth-child(2) { width: 1.3rem; transition-delay: 70ms; }
+.menu-lines span:nth-child(3) { width: 1.9rem; transition-delay: 140ms; }
+.pill-cream:hover .menu-lines span {
+  background-position: 0 0;
+}
+
+/* Arrow that glides on hover */
+.glide-arrow {
+  display: inline-flex;
+  transition: translate 0.9s var(--ease-assembly);
+}
+.roll-hover:hover .glide-arrow,
+a:hover > .glide-arrow,
+button:hover > .glide-arrow {
+  translate: 0.45rem 0;
+}
+
+/* Scroll-reveal wrapper */
+.reveal {
+  opacity: 0;
+  translate: 0 36px;
+  transition:
+    opacity 0.9s var(--ease-assembly),
+    translate 0.9s var(--ease-assembly);
+}
+.reveal-seen {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* Menu overlay links rise in staggered, like the reference */
+.menu-link {
+  animation: rise 0.9s var(--ease-assembly) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+
+/* Slow card hover, in the same spirit */
+.card-lift {
+  transition: translate 0.9s var(--ease-assembly), filter 0.9s var(--ease-assembly);
+}
+.card-lift:hover {
+  translate: 0 -6px;
+  filter: brightness(1.03);
+}

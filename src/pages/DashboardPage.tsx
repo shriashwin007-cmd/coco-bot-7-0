@@ -5,7 +5,6 @@ import {
   TriangleAlert,
   ClipboardList,
   Gauge,
-  Stethoscope,
   Bell,
 } from 'lucide-react'
 import {
@@ -21,6 +20,7 @@ import {
   Cell,
 } from 'recharts'
 import Badge from '../components/ui/Badge'
+import AssemblyButton from '../components/ui/AssemblyButton'
 import { loadScans, computeStats } from '../utils/storage'
 import { formatDate, formatScore } from '../utils/format'
 
@@ -65,9 +65,7 @@ export default function DashboardPage() {
         <p className="mx-auto mt-2 max-w-md text-sm text-[#3a2c1e]/75">
           These figures are counted from your saved scans. Offer a leaf to inscribe the first entry.
         </p>
-        <Link to="/doctor" className="pill pill-dark mt-5 inline-flex px-6 py-3.5 text-xs font-bold uppercase tracking-[0.2em]">
-          <Stethoscope className="h-4 w-4" /> Consult the Doctor
-        </Link>
+        <AssemblyButton to="/doctor" label="Consult the Doctor" variant="dark" className="mt-5" />
       </div>
     )
   }

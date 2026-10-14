@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
 import { Sprout, Sun, Droplets, Cpu, Recycle, Stethoscope, Server, Database } from 'lucide-react'
+import AssemblyButton from '../components/ui/AssemblyButton'
 
 const blocks = [
   {
@@ -98,12 +98,8 @@ export default function AboutPage() {
       <div className="card-paper p-8 text-center">
         <p className="font-display text-2xl font-light italic">The assembly awaits your leaf.</p>
         <div className="mt-4 flex flex-wrap justify-center gap-2.5">
-          <Link to="/doctor" className="pill pill-dark px-7 py-3.5 text-xs font-bold uppercase tracking-[0.2em]">
-            AI Plant Doctor
-          </Link>
-          <Link to="/dashboard" className="pill border border-[#2a1f14]/35 px-7 py-3.5 text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#2a1f14]/5">
-            Farm Dashboard
-          </Link>
+          <AssemblyButton to="/doctor" label="AI Plant Doctor" variant="dark" />
+          <AssemblyButton to="/dashboard" label="Farm Dashboard" variant="outline" arrow={false} />
         </div>
       </div>
     </div>

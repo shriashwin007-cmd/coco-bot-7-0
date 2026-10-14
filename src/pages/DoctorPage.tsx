@@ -3,7 +3,6 @@ import {
   UploadCloud,
   ImagePlus,
   Loader2,
-  Save,
   RotateCcw,
   FlaskConical,
   CircleCheck,
@@ -11,6 +10,7 @@ import {
   Info,
 } from 'lucide-react'
 import Badge from '../components/ui/Badge'
+import AssemblyButton from '../components/ui/AssemblyButton'
 import {
   analyzeImage,
   checkBackendHealth,
@@ -187,14 +187,15 @@ export default function DoctorPage() {
         )}
 
         <div className="mt-4 flex flex-wrap gap-2.5">
-          <button
+          <AssemblyButton
+            label={loading ? 'Reading' : 'Analyze Plant'}
             onClick={handleAnalyze}
             disabled={!file || loading}
-            className="pill pill-dark flex-1 items-center justify-center px-5 py-3.5 text-xs font-bold uppercase tracking-[0.2em]"
-          >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
-            {loading ? 'Reading…' : 'Analyze Plant'}
-          </button>
+            loading={loading}
+            variant="dark"
+            arrow={!loading}
+            className="flex-1 justify-center"
+          />
           <button
             onClick={handleDemo}
             disabled={loading}
@@ -318,12 +319,12 @@ export default function DoctorPage() {
                 <CircleCheck className="h-4 w-4" /> Entered into the ledger — see Dashboard and History.
               </p>
             ) : (
-              <button
+              <AssemblyButton
+                label="Save Report"
                 onClick={handleSave}
-                className="pill pill-dark mt-4 w-full items-center justify-center px-5 py-3.5 text-xs font-bold uppercase tracking-[0.2em]"
-              >
-                <Save className="h-4 w-4" /> Save Report
-              </button>
+                variant="dark"
+                className="mt-4 w-full justify-center"
+              />
             )}
           </div>
         )}

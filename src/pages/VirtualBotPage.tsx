@@ -8,10 +8,9 @@ import {
   Radio,
   SprayCan,
   FlaskConical,
-  Play,
-  Loader2,
 } from 'lucide-react'
 import Badge from '../components/ui/Badge'
+import AssemblyButton from '../components/ui/AssemblyButton'
 import { loadBotState, runMonitoringCycle } from '../utils/simulation'
 
 export default function VirtualBotPage() {
@@ -86,14 +85,15 @@ export default function VirtualBotPage() {
               </div>
             ))}
           </div>
-          <button
+          <AssemblyButton
+            label={running ? 'Walking the rows' : 'Begin a simulated round'}
             onClick={handleCycle}
             disabled={running}
-            className="pill pill-dark mt-4 w-full items-center justify-center px-5 py-3.5 text-xs font-bold uppercase tracking-[0.2em]"
-          >
-            {running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
-            {running ? 'Walking the rows…' : 'Begin a simulated round'}
-          </button>
+            loading={running}
+            variant="dark"
+            arrow={!running}
+            className="mt-4 w-full justify-center"
+          />
           <p className="mt-2 text-xs text-[#6f5f4c]">
             {state.lastCycle ? `Last rehearsal: ${state.lastCycle}` : 'No round yet walked in this browser.'} This
             button moves figures only — no true mechanism stirs.

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Search, Trash2, Leaf, Stethoscope, Download } from 'lucide-react'
+import { Search, Trash2, Leaf, Download } from 'lucide-react'
 import Badge from '../components/ui/Badge'
+import AssemblyButton from '../components/ui/AssemblyButton'
 import { loadScans, deleteScan, clearDemoScans, clearAllScans, exportScansJson } from '../utils/storage'
 import { formatDate, formatScore } from '../utils/format'
 import type { ScanRecord } from '../types'
@@ -45,9 +45,7 @@ export default function HistoryPage() {
         <p className="mx-auto mt-2 max-w-md text-sm text-[#3a2c1e]/75">
           Reports saved from the Doctor will be bound here — portraits, dates, verdicts, and seals of origin.
         </p>
-        <Link to="/doctor" className="pill pill-dark mt-5 inline-flex px-6 py-3.5 text-xs font-bold uppercase tracking-[0.2em]">
-          <Stethoscope className="h-4 w-4" /> Read a leaf
-        </Link>
+        <AssemblyButton to="/doctor" label="Read a Leaf" variant="dark" className="mt-5" />
       </div>
     )
   }
