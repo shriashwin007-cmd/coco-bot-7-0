@@ -11,11 +11,28 @@ AI-powered smart waste management demonstration platform.
 npm install
 ```
 
-## Development
+## Development (website only, demo mode)
 ```bash
 npm run dev
 ```
 Opens the app at http://localhost:5173
+
+## Real AI backend (Step 2)
+
+The `backend/` folder contains a Python FastAPI server using the real pretrained
+**CLIP ViT-B/32** vision model for street-cleanliness classification.
+
+```bat
+REM Terminal 1 — double-click or run:
+backend\start-ai.bat
+REM Terminal 2:
+npm run dev
+```
+
+Then upload a street photo in the AI Scanner — results tagged **REAL AI** are
+genuine model predictions with real confidence scores. See `backend/README.md`
+for details. The website reads the backend URL from `.env`
+(see `.env.example`); without it, the site runs in clearly labelled demo mode.
 
 ## Production build
 ```bash
