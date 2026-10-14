@@ -42,7 +42,7 @@ export function saveBotState(state: VirtualBotState): void {
 }
 
 /** Run one simulated monitoring cycle and return the new state + log lines. */
-export function runMonitoringCycle(prev: VirtualBotState): { state: VirtualBotState; log: string[] } {
+export function runMonitoringCycle(): { state: VirtualBotState; log: string[] } {
   const soilMoisture = rand(28, 72)
   const temperature = rand(24, 34)
   const humidity = rand(45, 85)

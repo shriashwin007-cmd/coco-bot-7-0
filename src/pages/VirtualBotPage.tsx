@@ -24,7 +24,7 @@ export default function VirtualBotPage() {
     setLog(['Starting simulated monitoring cycle…'])
     // Small staged delay so the demo feels like a real cycle, without blocking.
     window.setTimeout(() => {
-      const { state: next, log: lines } = runMonitoringCycle(state)
+      const { state: next, log: lines } = runMonitoringCycle()
       setState(next)
       setLog(lines)
       setRunning(false)
