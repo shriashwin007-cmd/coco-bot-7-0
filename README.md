@@ -55,3 +55,21 @@ npm run preview
 - Demo outputs are always badged DEMO with null score, kept separate from REAL AI.
 - Virtual COCO BOT sensor/pump panels are all marked SIMULATED; the run-cycle button only updates the simulation.
 - No `leaf_disease_model.h5` / `labels.txt` were present at build — see `backend/README.md` for the future-model hook.
+
+## Deploy on Vercel (multi-service)
+
+`vercel.json` defines two services in one project:
+
+- `app` (Vite frontend, catch-all route) with a `BACKEND_URL` binding to `backend`
+- `backend` (FastAPI, public under `/api/*`)
+
+The browser calls same-origin `/api/...`, which Vercel rewrites to the backend
+service — so **do not set `VITE_AI_API_URL` in the Vercel dashboard** (leave it
+unset and the deployed site just works). Local dev keeps using `.env`
+(`VITE_AI_API_URL=http://localhost:8000`), or remove it and rely on the Vite
+dev proxy, which forwards `/api` to `http://127.0.0.1:8000`.
+
+```bat
+npm i -g vercel
+vercel deploy
+```

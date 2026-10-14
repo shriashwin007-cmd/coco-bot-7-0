@@ -1,19 +1,28 @@
 // COCO BOT 7.0 AI service module.
-// Talks to the FastAPI backend (POST /analyze) when configured via
-// VITE_AI_API_URL. Never fabricates predictions: backend errors are thrown
-// to the caller, and demo results are only produced by createDemoAnalysis().
+// Talks to the FastAPI backend (POST /analyze). Never fabricates predictions:
+// backend errors are thrown to the caller, and demo results are only produced
+// by createDemoAnalysis().
 
 import type { AIAnalysisResult, LeafMetrics, PlantStatus } from '../types'
 
 export const AI_SERVICE_UNAVAILABLE_MESSAGE =
-  'The AI analysis service is not connected. Start the backend (backend\\start-cocobot.bat) or use the clearly labelled demo mode.'
+  'The AI analysis service could not be reached. Local dev: start the backend, then retry. Deployed site: the app uses its built-in /api route.'
 
 export const SUPPORTED_LABELS_NOTE =
   'This system supports only healthy vs needs-inspection classification. It does not diagnose specific diseases.'
 
-export function getAiApiUrl(): string | undefined {
+/**
+ * Base URL for the AI backend.
+ * - Local dev with VITE_AI_API_URL set (see .env): uses that value.
+ * - Vercel deployment (variable unset): same-origin "/api", routed to the
+ *   backend service by the vercel.json rewrite.
+ * - Local dev without the variable: "/api", forwarded by the Vite dev proxy
+ *   (see vite.config.ts) to http://127.0.0.1:8000.
+ */
+export function getAiApiUrl(): string {
   const url = import.meta.env.VITE_AI_API_URL as string | undefined
-  return url && url.trim() ? url.trim().replace(/\/+$/, '') : undefined
+  if (url && url.trim()) return url.trim().replace(/\/+$/, '')
+  return '/api'
 }
 
 function toStatus(value: unknown): PlantStatus {
@@ -80,7 +89,6 @@ function validateResponse(data: unknown): AIAnalysisResult {
  */
 export async function analyzeImage(file: File): Promise<AIAnalysisResult> {
   const apiUrl = getAiApiUrl()
-  if (!apiUrl) throw new Error(AI_SERVICE_UNAVAILABLE_MESSAGE)
 
   const controller = new AbortController()
   const timeoutId = window.setTimeout(() => controller.abort(), 45000)
@@ -129,7 +137,6 @@ export async function checkBackendHealth(): Promise<{
   supported_labels?: string[]
 }> {
   const apiUrl = getAiApiUrl()
-  if (!apiUrl) return { ok: false }
   try {
     const res = await fetch(`${apiUrl}/health`)
     if (!res.ok) return { ok: false }

@@ -35,6 +35,10 @@ API contract (matches src/services/aiService.ts)
          explanation, recommended_next_step, metrics,
          analysis_source, model_info }
 
+  Every route also answers under the /api prefix (/api/analyze, /api/health,
+  /api/labels) so the Vercel rewrite `/api/(.*)` -> backend service works
+  while local dev keeps the bare paths.
+
 Run (Windows PowerShell):
   cd backend
   python -m venv .venv
@@ -86,14 +90,22 @@ def read_labels_file() -> list[str] | None:
 
 
 app = FastAPI(title="COCO BOT 7.0 AI (demo)")
+
+
+def _allowed_origins() -> list[str]:
+    """CORS origins. Same-origin /api rewrites (Vercel) send the public
+    domain as Origin, which can't be known at code time — so the default is
+    "*" (no credentials are used). Override with ALLOWED_ORIGINS env var,
+    e.g. ALLOWED_ORIGINS=http://localhost:5173,https://my-farm.vercel.app"""
+    raw = os.environ.get("ALLOWED_ORIGINS", "*").strip()
+    if raw == "*" or not raw:
+        return ["*"]
+    return [o.strip() for o in raw.split(",") if o.strip()]
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:5174",
-    ],
+    allow_origins=_allowed_origins(),
     allow_methods=["POST", "GET", "OPTIONS"],
     allow_headers=["*"],
 )
@@ -234,6 +246,7 @@ def build_result(metrics: dict) -> dict:
 
 
 @app.get("/health")
+@app.get("/api/health", include_in_schema=False)
 def health() -> dict:
     custom_labels = read_labels_file()
     return {
@@ -246,6 +259,7 @@ def health() -> dict:
 
 
 @app.get("/labels")
+@app.get("/api/labels", include_in_schema=False)
 def labels() -> dict:
     custom_labels = read_labels_file()
     return {
@@ -260,6 +274,7 @@ def labels() -> dict:
 
 
 @app.post("/analyze")
+@app.post("/api/analyze", include_in_schema=False)
 async def analyze(file: UploadFile = File(...)) -> dict:
     if file.content_type not in ALLOWED_TYPES:
         raise HTTPException(

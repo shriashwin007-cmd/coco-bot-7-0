@@ -219,8 +219,8 @@ export default function DoctorPage() {
             </span>
           ) : (
             <span>
-              ○ AI service not detected{apiUrl ? ` at ${apiUrl}` : ' (VITE_AI_API_URL not set)'}. Start it with{' '}
-              <code className="text-[#D1D5DB]">backend\start-cocobot.bat</code>, or use the labelled demo mode.
+              ○ AI service not detected at {apiUrl}. Local dev: run the backend, then retry. Deployed site: the
+              built-in /api route is used automatically. You can still use the labelled demo mode.
             </span>
           )}
         </div>
