@@ -32,6 +32,9 @@ function fileError(file: File): string | null {
   return null
 }
 
+const outlineBtn =
+  'pill border border-[#2a1f14]/35 px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] hover:bg-[#2a1f14]/5'
+
 export default function DoctorPage() {
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
@@ -133,11 +136,12 @@ export default function DoctorPage() {
 
   return (
     <div className="grid gap-5 lg:grid-cols-2">
-      {/* Upload panel */}
-      <div className="clay p-6">
-        <h2 className="font-semibold">1 · Upload a leaf photo</h2>
-        <p className="mt-1 text-sm text-[#9CA3AF]">
-          Clear daylight photos of a single leaf work best. JPG, PNG, or WEBP up to {MAX_MB} MB.
+      {/* Offering panel */}
+      <div className="card-paper p-6 sm:p-7">
+        <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#8a6a4d]">The Offering</p>
+        <h2 className="font-display mt-1 text-3xl font-light tracking-tight">Present a leaf</h2>
+        <p className="mt-1 text-sm text-[#3a2c1e]/75">
+          Clear daylight portraits of a single leaf read best. JPG, PNG, or WEBP up to {MAX_MB} MB.
         </p>
 
         <div
@@ -153,13 +157,13 @@ export default function DoctorPage() {
           }}
           onClick={() => inputRef.current?.click()}
           className={`mt-4 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-10 text-center transition-colors ${
-            dragOver ? 'border-[#B7F34A] bg-[#B7F34A1A]' : 'border-[#2A3A30] hover:border-[#B7F34A66]'
+            dragOver ? 'border-[#2a1f14] bg-[#2a1f14]/5' : 'border-[#8a6a4d]/60 hover:border-[#2a1f14]'
           }`}
         >
-          <UploadCloud className="h-9 w-9 text-[#B7F34A]" />
-          <p className="mt-3 text-sm font-semibold">Drag & drop your leaf photo here</p>
-          <p className="mt-1 text-xs text-[#9CA3AF]">or</p>
-          <span className="clay-btn clay-btn-secondary mt-2 inline-flex items-center gap-2 px-5 py-2.5 text-sm">
+          <UploadCloud className="h-9 w-9 text-[#2a1f14]" />
+          <p className="font-display mt-3 text-xl">Lay your photograph here</p>
+          <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-[#6f5f4c]">or</p>
+          <span className={`${outlineBtn} mt-2 inline-flex items-center gap-2`}>
             <ImagePlus className="h-4 w-4" /> Browse image
           </span>
           <input
@@ -172,10 +176,10 @@ export default function DoctorPage() {
         </div>
 
         {preview && (
-          <div className="mt-4 overflow-hidden rounded-2xl border border-[#223027]">
+          <div className="mt-4 overflow-hidden rounded-2xl border border-[#8a6a4d]/40">
             <img src={preview} alt="Uploaded leaf preview" className="max-h-80 w-full object-cover" />
             {file && (
-              <p className="truncate border-t border-[#223027] bg-[#0B0F0D]/70 px-4 py-2 text-xs text-[#9CA3AF]">
+              <p className="truncate border-t border-[#8a6a4d]/30 bg-[#2a1f14]/5 px-4 py-2 text-xs text-[#6f5f4c]">
                 {file.name} · {(file.size / 1024).toFixed(0)} KB
               </p>
             )}
@@ -186,70 +190,68 @@ export default function DoctorPage() {
           <button
             onClick={handleAnalyze}
             disabled={!file || loading}
-            className="clay-btn clay-btn-primary inline-flex flex-1 items-center justify-center gap-2 px-5 py-3 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            className="pill pill-dark flex-1 items-center justify-center px-5 py-3.5 text-xs font-bold uppercase tracking-[0.2em]"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
-            {loading ? 'Analyzing…' : 'Analyze Plant'}
+            {loading ? 'Reading…' : 'Analyze Plant'}
           </button>
           <button
             onClick={handleDemo}
             disabled={loading}
-            className="clay-btn clay-btn-outline inline-flex items-center gap-2 px-5 py-3 text-sm"
+            className={outlineBtn}
             title="Illustrative example only — not a real analysis"
           >
-            <FlaskConical className="h-4 w-4" /> Demo result
+            <FlaskConical className="h-4 w-4" /> Demo
           </button>
           {(file || result) && (
-            <button
-              onClick={handleReset}
-              disabled={loading}
-              className="clay-btn clay-btn-secondary inline-flex items-center gap-2 px-4 py-3 text-sm"
-            >
+            <button onClick={handleReset} disabled={loading} className={outlineBtn}>
               <RotateCcw className="h-4 w-4" /> Reset
             </button>
           )}
         </div>
 
-        <div className="mt-4 rounded-2xl border border-[#223027] bg-[#0B0F0D]/60 p-3.5 text-xs text-[#9CA3AF]">
+        <div className="panel-inset mt-4 p-3.5 text-xs text-[#3a2c1e]/80">
           {backend === null ? (
-            <span>Checking AI service…</span>
+            <span>Consulting the AI service…</span>
           ) : backend.ok ? (
-            <span className="text-[#B7F34A]">
-              ● AI service connected{backend.backend ? ` (${backend.backend})` : ''}. Results will be tagged REAL AI.
+            <span className="font-semibold text-[#3d471f]">
+              ● The service answers{backend.backend ? ` (${backend.backend})` : ''}. Findings will bear the REAL AI seal.
             </span>
           ) : (
             <span>
-              ○ AI service not detected at {apiUrl}. Local dev: run the backend, then retry. Deployed site: the
-              built-in /api route is used automatically. You can still use the labelled demo mode.
+              ○ No service heard at {apiUrl}. Locally, run the backend and retry; on the
+              deployed site the built-in /api route is used. Or proceed with the labelled demo.
             </span>
           )}
         </div>
 
         {error && (
-          <div className="mt-4 flex items-start gap-2.5 rounded-2xl border border-[#EF44444D] bg-[#EF44441A] p-4 text-sm text-[#FECACA]">
+          <div className="mt-4 flex items-start gap-2.5 rounded-2xl border border-[#a4442e]/50 bg-[#a4442e]/10 p-4 text-sm text-[#7c3121]">
             <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" />
             <p>{error}</p>
           </div>
         )}
       </div>
 
-      {/* Results panel */}
-      <div className="clay p-6">
-        <h2 className="font-semibold">2 · AI result</h2>
+      {/* Reading panel */}
+      <div className="card-paper p-6 sm:p-7">
+        <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#8a6a4d]">The Reading</p>
+        <h2 className="font-display mt-1 text-3xl font-light tracking-tight">What the leaves say</h2>
         {!result && !loading && (
-          <div className="mt-4 rounded-2xl border border-[#223027] bg-[#0B0F0D]/60 p-8 text-center">
-            <Info className="mx-auto h-8 w-8 text-[#6B7280]" />
-            <p className="mt-3 text-sm text-[#9CA3AF]">
-              No analysis yet. Upload a photo and click <strong className="text-white">Analyze Plant</strong> for a
-              real reading, or <strong className="text-white">Demo result</strong> for a labelled example.
+          <div className="panel-inset mt-4 p-8 text-center">
+            <Info className="mx-auto h-8 w-8 text-[#8a6a4d]" />
+            <p className="mx-auto mt-3 max-w-sm text-sm text-[#3a2c1e]/75">
+              Silence, so far. Present a photograph and press{' '}
+              <strong className="text-[#2a1f14]">Analyze Plant</strong> for a true reading, or{' '}
+              <strong className="text-[#2a1f14]">Demo</strong> for a labelled illustration.
             </p>
           </div>
         )}
         {loading && (
-          <div className="mt-4 flex flex-col items-center rounded-2xl border border-[#223027] bg-[#0B0F0D]/60 p-10 text-center">
-            <Loader2 className="h-9 w-9 animate-spin text-[#B7F34A]" />
-            <p className="mt-3 text-sm font-medium">Analyzing leaf pixels…</p>
-            <p className="mt-1 text-xs text-[#9CA3AF]">Measuring green vs discoloured areas. Usually a few seconds.</p>
+          <div className="panel-inset mt-4 flex flex-col items-center p-10 text-center">
+            <Loader2 className="h-9 w-9 animate-spin text-[#2a1f14]" />
+            <p className="font-display mt-3 text-xl">Reading the green…</p>
+            <p className="mt-1 text-xs text-[#6f5f4c]">Weighing green against discoloured regions. A few seconds.</p>
           </div>
         )}
         {result && (
@@ -258,14 +260,14 @@ export default function DoctorPage() {
               <Badge value={result.status} />
               <Badge value={result.analysis_source} size="sm" />
             </div>
-            <h3 className="mt-3 text-lg font-bold capitalize leading-snug">{result.predicted_label}</h3>
+            <h3 className="font-display mt-3 text-3xl font-light capitalize leading-tight">{result.predicted_label}</h3>
 
-            <div className="mt-4 rounded-2xl border border-[#223027] bg-[#0B0F0D]/60 p-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-[#9CA3AF]">Model score</span>
-                <span className="text-lg font-bold text-[#B7F34A]">{formatScore(result.model_score)}</span>
+            <div className="panel-inset mt-4 p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#6f5f4c]">Model score</span>
+                <span className="font-display text-3xl text-[#3d471f]">{formatScore(result.model_score)}</span>
               </div>
-              <p className="mt-1 text-xs leading-relaxed text-[#6B7280]">{result.score_description}</p>
+              <p className="mt-1 text-xs leading-relaxed text-[#6f5f4c]">{result.score_description}</p>
               {result.metrics && (
                 <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
                   {[
@@ -274,51 +276,51 @@ export default function DoctorPage() {
                     { k: 'Brown', v: `${Math.round(result.metrics.brown_ratio * 100)}%` },
                     { k: 'Leaf fill', v: `${Math.round(result.metrics.leaf_coverage * 100)}%` },
                   ].map((m) => (
-                    <div key={m.k} className="rounded-xl border border-[#223027] px-2.5 py-2 text-center">
-                      <p className="font-bold text-white">{m.v}</p>
-                      <p className="text-[#6B7280]">{m.k}</p>
+                    <div key={m.k} className="rounded-xl border border-[#8a6a4d]/35 bg-[#fffdf6]/60 px-2.5 py-2 text-center">
+                      <p className="font-display text-lg text-[#2a1f14]">{m.v}</p>
+                      <p className="text-[#6f5f4c]">{m.k}</p>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            <div className="mt-3 rounded-2xl border border-[#223027] bg-[#0B0F0D]/60 p-4">
-              <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#9CA3AF]">
+            <div className="panel-inset mt-3 p-4">
+              <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-[#6f5f4c]">
                 {result.status === 'healthy' ? (
-                  <CircleCheck className="h-3.5 w-3.5 text-[#B7F34A]" />
+                  <CircleCheck className="h-3.5 w-3.5 text-[#3d471f]" />
                 ) : (
-                  <TriangleAlert className="h-3.5 w-3.5 text-[#F59E0B]" />
+                  <TriangleAlert className="h-3.5 w-3.5 text-[#8a5d1c]" />
                 )}
-                Explanation
+                The explanation
               </p>
-              <p className="mt-1.5 text-sm leading-relaxed text-[#D1D5DB]">{result.explanation}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-[#3a2c1e]">{result.explanation}</p>
             </div>
 
-            <div className="mt-3 rounded-2xl border border-[#B7F34A4D] bg-[#B7F34A1A] p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#B7F34A]">Suggested next step</p>
-              <p className="mt-1.5 text-sm leading-relaxed text-[#E7F8C8]">{result.recommended_next_step}</p>
+            <div className="mt-3 rounded-2xl border border-[#55622e]/50 bg-[#55622e]/10 p-4">
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#3d471f]">Counselled next step</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-[#33401b]">{result.recommended_next_step}</p>
             </div>
 
             {result.analysis_source === 'DEMO' ? (
-              <p className="mt-3 text-xs text-[#A855F7]">
-                DEMO result — illustrative example only. It was not computed from your photo; do not act on it.
+              <p className="mt-3 text-xs font-medium text-[#6d3d5c]">
+                A DEMO illustration — not computed from your photograph. Do not act upon it.
               </p>
             ) : (
-              <p className="mt-3 text-xs text-[#6B7280]">
-                REAL AI reading from leaf-pixel analysis. Supports healthy vs needs-inspection only — no specific
-                disease diagnosed. Confirm uncertain cases with an expert.
+              <p className="mt-3 text-xs text-[#6f5f4c]">
+                A REAL AI finding from pixel analysis. Healthy vs needs-inspection only — no
+                disease is named. Have uncertain cases confirmed by an expert.
               </p>
             )}
 
             {savedId ? (
-              <p className="mt-4 flex items-center gap-2 text-sm font-medium text-[#B7F34A]">
-                <CircleCheck className="h-4 w-4" /> Report saved — see Farm Dashboard and Scan History.
+              <p className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#3d471f]">
+                <CircleCheck className="h-4 w-4" /> Entered into the ledger — see Dashboard and History.
               </p>
             ) : (
               <button
                 onClick={handleSave}
-                className="clay-btn clay-btn-primary mt-4 inline-flex w-full items-center justify-center gap-2 px-5 py-3 text-sm"
+                className="pill pill-dark mt-4 w-full items-center justify-center px-5 py-3.5 text-xs font-bold uppercase tracking-[0.2em]"
               >
                 <Save className="h-4 w-4" /> Save Report
               </button>

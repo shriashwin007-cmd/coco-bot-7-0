@@ -21,8 +21,7 @@ export default function VirtualBotPage() {
 
   const handleCycle = () => {
     setRunning(true)
-    setLog(['Starting simulated monitoring cycle…'])
-    // Small staged delay so the demo feels like a real cycle, without blocking.
+    setLog(['The rite begins — a simulated round of the rows…'])
     window.setTimeout(() => {
       const { state: next, log: lines } = runMonitoringCycle()
       setState(next)
@@ -32,59 +31,54 @@ export default function VirtualBotPage() {
   }
 
   const sensors = [
-    { icon: Droplets, label: 'Soil moisture', value: `${state.soilMoisture}%`, hint: state.soilMoisture < 35 ? 'Dry — irrigation suggested' : 'Within expected range' },
-    { icon: Thermometer, label: 'Temperature', value: `${state.temperature}°C`, hint: 'Canopy air temperature' },
-    { icon: Wind, label: 'Humidity', value: `${state.humidity}%`, hint: state.humidity > 78 ? 'High — fungal-risk watch' : 'Within expected range' },
-    { icon: Leaf, label: 'Plant health status', value: state.plantHealth, hint: 'Interpretation of simulated readings' },
-    { icon: Sun, label: 'Solar power', value: `${state.solarPower} · ${state.solarWatts} W`, hint: 'Simulated panel input' },
-    { icon: Radio, label: 'Connectivity', value: state.connectivity, hint: 'Simulated link state' },
+    { icon: Droplets, label: 'Soil moisture', value: `${state.soilMoisture}%`, hint: state.soilMoisture < 35 ? 'Parched — watering counselled' : 'Within the expected measure' },
+    { icon: Thermometer, label: 'Temperature', value: `${state.temperature}°C`, hint: 'Air among the canopy' },
+    { icon: Wind, label: 'Humidity', value: `${state.humidity}%`, hint: state.humidity > 78 ? 'Heavy — a watch for mould' : 'Within the expected measure' },
+    { icon: Leaf, label: 'Plant health', value: state.plantHealth, hint: 'A reading of the simulated signs' },
+    { icon: Sun, label: 'Solar power', value: `${state.solarPower} · ${state.solarWatts} W`, hint: 'Imagined panel intake' },
+    { icon: Radio, label: 'Signal', value: state.connectivity, hint: 'An imagined link' },
   ]
 
   return (
     <div>
-      <div className="clay flex flex-wrap items-center gap-2 p-4 text-sm">
+      <div className="card-paper flex flex-wrap items-center gap-2 p-4 text-sm">
         <Badge value="simulated" />
-        <p className="text-[#9CA3AF]">
-          Every reading and device state on this page is <strong className="text-white">simulated</strong> to
-          demonstrate the intended COCO BOT hardware. Nothing here reads or controls real equipment.
+        <p className="text-[#3a2c1e]/80">
+          Every measure and mechanism on this page is <strong className="text-[#2a1f14]">simulated</strong> —
+          a rehearsal of the intended machine. Nothing here touches true equipment.
         </p>
       </div>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {sensors.map((s) => (
-          <div key={s.label} className="clay p-5">
-            <span className="clay-icon-tile inline-flex h-10 w-10 items-center justify-center">
-              <s.icon className="h-5 w-5 text-[#B7F34A]" />
-            </span>
-            <p className="mt-3 text-xs uppercase tracking-wide text-[#9CA3AF]">{s.label} · simulated</p>
-            <p className="mt-1 font-semibold leading-snug">{s.value}</p>
-            <p className="mt-0.5 text-xs text-[#6B7280]">{s.hint}</p>
+          <div key={s.label} className="card-paper p-5">
+            <s.icon className="h-5 w-5 text-[#8a6a4d]" />
+            <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.22em] text-[#6f5f4c]">{s.label} · imagined</p>
+            <p className="font-display mt-1 text-2xl font-light leading-snug">{s.value}</p>
+            <p className="mt-0.5 text-xs text-[#6f5f4c]">{s.hint}</p>
           </div>
         ))}
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <div className="clay p-5">
-          <h3 className="font-semibold">Virtual device states</h3>
-          <p className="text-xs text-[#9CA3AF]">Pump states change only inside the simulation.</p>
+        <div className="card-paper p-5 sm:p-6">
+          <h3 className="font-display text-2xl font-light tracking-tight">The mechanisms</h3>
+          <p className="text-xs text-[#6f5f4c]">Pumps change their state only within the rehearsal.</p>
           <div className="mt-4 space-y-2.5">
             {[
               { icon: SprayCan, label: 'Antifungal pump', value: state.antifungalPump },
               { icon: FlaskConical, label: 'Nutrient pump', value: state.nutrientPump },
             ].map((d) => (
-              <div
-                key={d.label}
-                className="flex items-center justify-between rounded-2xl border border-[#223027] bg-[#0B0F0D]/60 px-4 py-3"
-              >
-                <span className="flex items-center gap-2.5 text-sm font-medium">
-                  <d.icon className="h-4 w-4 text-[#B7F34A]" /> {d.label}{' '}
-                  <span className="text-[10px] text-[#6B7280]">(simulated)</span>
+              <div key={d.label} className="panel-inset flex items-center justify-between px-4 py-3">
+                <span className="flex items-center gap-2.5 text-sm font-semibold">
+                  <d.icon className="h-4 w-4 text-[#8a6a4d]" /> {d.label}{' '}
+                  <span className="text-[10px] font-normal uppercase tracking-[0.18em] text-[#6f5f4c]">(imagined)</span>
                 </span>
                 <span
-                  className={`rounded-full border px-3 py-1 text-xs font-bold ${
+                  className={`rounded-full border px-3 py-1 text-xs font-bold tracking-widest ${
                     d.value === 'ON'
-                      ? 'border-[#B7F34A4D] bg-[#B7F34A1A] text-[#B7F34A]'
-                      : 'border-[#223027] bg-[#141A17] text-[#6B7280]'
+                      ? 'border-[#55622e]/55 bg-[#55622e]/15 text-[#3d471f]'
+                      : 'border-[#8a6a4d]/40 bg-black/5 text-[#6f5f4c]'
                   }`}
                 >
                   {d.value}
@@ -95,30 +89,30 @@ export default function VirtualBotPage() {
           <button
             onClick={handleCycle}
             disabled={running}
-            className="clay-btn clay-btn-primary mt-4 inline-flex w-full items-center justify-center gap-2 px-5 py-3 text-sm disabled:opacity-60"
+            className="pill pill-dark mt-4 w-full items-center justify-center px-5 py-3.5 text-xs font-bold uppercase tracking-[0.2em]"
           >
             {running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
-            {running ? 'Running simulated cycle…' : 'Run simulated monitoring cycle'}
+            {running ? 'Walking the rows…' : 'Begin a simulated round'}
           </button>
-          <p className="mt-2 text-xs text-[#6B7280]">
-            {state.lastCycle ? `Last simulated cycle: ${state.lastCycle}` : 'No cycle run yet in this browser.'} This
-            button only updates the simulation — it does not operate hardware.
+          <p className="mt-2 text-xs text-[#6f5f4c]">
+            {state.lastCycle ? `Last rehearsal: ${state.lastCycle}` : 'No round yet walked in this browser.'} This
+            button moves figures only — no true mechanism stirs.
           </p>
         </div>
 
-        <div className="clay p-5">
-          <h3 className="font-semibold">Cycle log</h3>
-          <p className="text-xs text-[#9CA3AF]">Step-by-step record of the latest simulation run.</p>
-          <div className="mt-4 min-h-40 rounded-2xl border border-[#223027] bg-[#0B0F0D]/80 p-4 font-mono text-xs leading-relaxed">
+        <div className="card-espresso p-5 sm:p-6">
+          <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#f4ecdd]/60">The chronicle</p>
+          <h3 className="font-display mt-1 text-2xl font-light tracking-tight">What the round reported</h3>
+          <div className="mt-4 min-h-40 rounded-2xl border border-[#f4ecdd]/15 bg-black/25 p-4 font-mono text-xs leading-relaxed">
             {log.length === 0 ? (
-              <span className="text-[#6B7280]">
-                No cycle run yet. Press “Run simulated monitoring cycle” to generate a log.
+              <span className="text-[#f4ecdd]/50">
+                Nothing yet inscribed. Begin a simulated round to fill this chronicle.
               </span>
             ) : (
               <ul className="space-y-1.5">
                 {log.map((line, i) => (
-                  <li key={i} className="text-[#D1D5DB]">
-                    <span className="text-[#B7F34A]">›</span> {line}
+                  <li key={i} className="text-[#f4ecdd]/85">
+                    <span className="text-[#d3b78f]">›</span> {line}
                   </li>
                 ))}
               </ul>

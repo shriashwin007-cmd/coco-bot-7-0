@@ -18,7 +18,7 @@ export function formatScore(score: number | null): string {
 }
 
 export function statusColor(value: PlantStatus): string {
-  return value === 'healthy' ? 'text-[#B7F34A]' : 'text-[#F59E0B]'
+  return value === 'healthy' ? 'text-[#3d471f]' : 'text-[#8a5d1c]'
 }
 
 export function sourceLabel(source: AnalysisSource): string {
