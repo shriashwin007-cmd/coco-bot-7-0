@@ -29,7 +29,7 @@ export default function AppLayout() {
   if (isHome) return <Outlet />
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0B0F0D] text-[#F5F7F6]">
+    <div className="flex h-screen overflow-hidden text-[#F5F7F6]">
       <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((c) => !c)} />
       <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         <header className="flex items-center justify-between gap-4 border-b border-[#223027] bg-[#0F1512]/80 backdrop-blur px-6 py-4">

@@ -36,7 +36,7 @@ const stats = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#0B0F0D] text-[#F5F7F6]">
+    <div className="min-h-screen text-[#F5F7F6]">
       {/* Nav */}
       <header className="sticky top-0 z-30 border-b border-[#223027] bg-[#0B0F0D]/85 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">

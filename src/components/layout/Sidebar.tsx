@@ -13,7 +13,7 @@ const navItems = [
 
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
-    <aside className={`flex h-full flex-col border-r border-[#223027] bg-[#0F1512] transition-[width] duration-200 shrink-0 ${collapsed ? 'w-16' : 'w-60'}`}>
+    <aside className={`flex h-full flex-col border-r border-[#223027] bg-[#0F1512]/70 backdrop-blur-md transition-[width] duration-200 shrink-0 ${collapsed ? 'w-16' : 'w-60'}`}>
       <div className="flex items-center gap-2.5 px-4 py-5">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#B7F34A1A] text-[#B7F34A]">
           <Leaf className="h-5 w-5" />
