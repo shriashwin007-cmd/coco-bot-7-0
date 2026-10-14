@@ -1,6 +1,5 @@
 import type { Cleanliness, Severity, AnalysisSource, ReportStatus } from '../../types'
 
-type BadgeKind = 'cleanliness' | 'severity' | 'source' | 'status'
 type BadgeValue = Cleanliness | Severity | AnalysisSource | ReportStatus
 
 const labels: Record<string, string> = {
@@ -34,21 +33,20 @@ const styles: Record<string, string> = {
 }
 
 interface BadgeProps {
-  kind: BadgeKind
+  kind: 'cleanliness' | 'severity' | 'source' | 'status'
   value: BadgeValue
   size?: 'sm' | 'md'
-  dot?: boolean
 }
 
-export default function Badge({ value, size = 'md', dot = false }: BadgeProps) {
+export default function Badge({ value, size = 'md' }: BadgeProps) {
   const style = styles[value] || 'bg-[#2A3A30] text-[#9CA3AF] border-[#2A3A30]'
   const label = labels[value] || value
-
-  const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-1 text-xs'
+  const sizeClasses = size === 'sm' ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-xs'
 
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border ${style} ${sizeClasses} font-medium`}>
-      {dot && <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" aria-hidden="true" />}
+    <span
+      className={`clay-badge inline-flex items-center rounded-full border ${style} ${sizeClasses} font-semibold tracking-wide`}
+    >
       {label}
     </span>
   )

@@ -15,7 +15,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <aside className={`flex h-full flex-col border-r border-[#223027] bg-[#0F1512]/70 backdrop-blur-md transition-[width] duration-200 shrink-0 ${collapsed ? 'w-16' : 'w-60'}`}>
       <div className="flex items-center gap-2.5 px-4 py-5">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#B7F34A1A] text-[#B7F34A]">
+        <div className="clay-icon-tile flex h-11 w-11 shrink-0 items-center justify-center text-[#B7F34A]">
           <Leaf className="h-5 w-5" />
         </div>
         {!collapsed && (
@@ -30,7 +30,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           <NavLink
             key={item.to} to={item.to}
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150 focus-visible:ring-2 focus-visible:ring-[#B7F34A] ${isActive ? 'bg-[#B7F34A1A] text-[#B7F34A] border border-[#B7F34A4D]' : 'text-[#9CA3AF] hover:bg-[#141A17] hover:text-[#F5F7F6] border border-transparent'}`
+              `flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all duration-150 focus-visible:ring-2 focus-visible:ring-[#B7F34A] ${isActive ? 'clay-nav-active text-[#B7F34A]' : 'text-[#9CA3AF] hover:text-[#F5F7F6] rounded-[18px] hover:bg-[#141A17] border border-transparent'}`
             }
           >
             <item.icon className="h-4 w-4 shrink-0" />

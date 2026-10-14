@@ -9,7 +9,7 @@ import { loadScans, saveScans } from '../utils/storage'
 import type { ScanRecord, Cleanliness, Severity, AnalysisSource } from '../types'
 import { formatCleanliness, formatSeverity, formatDate } from '../utils/format'
 
-const selectCls = 'rounded-xl border border-[#2A3A30] bg-[#0F1512] px-3 py-2 text-sm text-[#F5F7F6] focus:border-[#B7F34A] focus:outline-none transition-colors'
+const selectCls = 'clay-input border-[#2A3A30] px-3 py-2 text-sm text-[#F5F7F6] focus:border-[#B7F34A] focus:outline-none transition-colors'
 
 export default function HistoryPage() {
   const [scans, setScans] = useState<ScanRecord[]>(() => loadScans())
@@ -53,7 +53,7 @@ export default function HistoryPage() {
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
             <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by id, filename, location…"
-              className="w-full rounded-xl border border-[#2A3A30] bg-[#0F1512] py-2.5 pl-10 pr-3 text-sm text-[#F5F7F6] placeholder:text-[#6B7280] focus:border-[#B7F34A] focus:outline-none focus:ring-2 focus:ring-[#B7F34A]/20 transition-all" />
+              className="w-full clay-input border-[#2A3A30] py-2.5 pl-10 pr-3 text-sm text-[#F5F7F6] placeholder:text-[#6B7280] focus:border-[#B7F34A] focus:outline-none focus:ring-2 focus:ring-[#B7F34A]/20 transition-all" />
           </div>
           <select value={cleanFilter} onChange={(e) => setCleanFilter(e.target.value as Cleanliness | 'all')} className={selectCls} aria-label="Filter by cleanliness">
             <option value="all">All cleanliness</option>
@@ -106,8 +106,8 @@ export default function HistoryPage() {
                       </div>
                     </td>
                     <td className="py-3 pr-4 text-[#9CA3AF] text-xs whitespace-nowrap tabular-nums">{formatDate(s.createdAt)}</td>
-                    <td className="py-3 pr-4"><Badge kind="cleanliness" value={s.cleanliness} size="sm" dot /></td>
-                    <td className="py-3 pr-4"><Badge kind="severity" value={s.severity} size="sm" dot /></td>
+                    <td className="py-3 pr-4"><Badge kind="cleanliness" value={s.cleanliness} size="sm" /></td>
+                    <td className="py-3 pr-4"><Badge kind="severity" value={s.severity} size="sm" /></td>
                     <td className="py-3 pr-4"><Badge kind="source" value={s.source} size="sm" /></td>
                     <td className="py-3 pr-4 text-xs text-[#9CA3AF] max-w-[160px] truncate">{s.location || '—'}</td>
                     <td className="py-3">
@@ -129,8 +129,8 @@ export default function HistoryPage() {
           <div className="space-y-4">
             {detail.thumbnail && <img src={detail.thumbnail} alt="Scan" className="h-44 w-full rounded-xl object-cover border border-[#223027]" />}
             <div className="flex flex-wrap gap-2">
-              <Badge kind="cleanliness" value={detail.cleanliness} dot />
-              <Badge kind="severity" value={detail.severity} dot />
+              <Badge kind="cleanliness" value={detail.cleanliness} />
+              <Badge kind="severity" value={detail.severity} />
               <Badge kind="source" value={detail.source} />
             </div>
             <dl className="space-y-2.5 text-sm">

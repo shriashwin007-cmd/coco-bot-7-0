@@ -122,7 +122,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {message && (
-        <div className="rounded-xl border border-[#B7F34A4D] bg-[#B7F34A1A] px-4 py-3 text-sm text-[#B7F34A] animate-slide-up">
+        <div className="clay-chip border-[#B7F34A4D] px-5 py-4 text-sm text-[#B7F34A] animate-slide-up">
           {message}
         </div>
       )}
@@ -273,7 +273,7 @@ export default function DashboardPage() {
           <Card>
             <CardRow>
               <h3 className="text-base font-semibold">Scan Activity (Last 14 Days)</h3>
-              <Badge kind="source" value={scans.some(s => s.source === 'REAL AI') ? 'REAL AI' : 'DEMO'} size="sm" dot />
+              <Badge kind="source" value={scans.some(s => s.source === 'REAL AI') ? 'REAL AI' : 'DEMO'} size="sm" />
             </CardRow>
             <CardSection>
               {activityMap.length === 0 ? (
@@ -354,7 +354,7 @@ export default function DashboardPage() {
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
                             <span className="font-mono text-xs text-[#6B7280]">{r.id.slice(0, 18)}…</span>
-                            <Badge kind="severity" value={r.severity} size="sm" dot />
+                            <Badge kind="severity" value={r.severity} size="sm" />
                           </div>
                           <p className="mt-1 text-sm text-[#9CA3AF] truncate">{r.location || 'Location not set'}</p>
                           <p className="mt-1 text-xs text-[#6B7280] truncate">{r.description}</p>
@@ -400,8 +400,8 @@ export default function DashboardPage() {
                         <tr key={s.id} className="border-b border-[#223027] last:border-0 hover:bg-[#18201C] transition-colors">
                           <td className="py-3 pr-4 font-mono text-xs text-[#9CA3AF]">{s.id}</td>
                           <td className="py-3 pr-4 text-[#9CA3AF] text-xs">{formatDate(s.createdAt)}</td>
-                          <td className="py-3 pr-4"><Badge kind="cleanliness" value={s.cleanliness} size="sm" dot /></td>
-                          <td className="py-3 pr-4"><Badge kind="severity" value={s.severity} size="sm" dot /></td>
+                          <td className="py-3 pr-4"><Badge kind="cleanliness" value={s.cleanliness} size="sm" /></td>
+                          <td className="py-3 pr-4"><Badge kind="severity" value={s.severity} size="sm" /></td>
                           <td className="py-3 pr-4 text-xs text-[#9CA3AF]">
                             {s.wasteCategories.length
                               ? s.wasteCategories.slice(0, 2).map((c) => `${c.name} (${c.count})`).join(', ') + (s.wasteCategories.length > 2 ? ' …' : '')

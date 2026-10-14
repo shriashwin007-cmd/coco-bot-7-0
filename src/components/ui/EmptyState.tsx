@@ -29,8 +29,8 @@ export default function EmptyState({
   const Icon = icons[variant]
 
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#2A3A30] bg-[#0F1512] px-6 py-12 text-center animate-fade-in">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-[#141A17] text-[#6B7280]">
+    <div className="clay flex flex-col items-center justify-center px-6 py-12 text-center animate-fade-in" style={{ borderStyle: 'dashed', borderColor: '#2A3A30', borderWidth: 2, background: 'linear-gradient(180deg, #121714 0%, #0F1512 100%)' }}>
+      <div className="clay-icon-tile mb-4 flex h-16 w-16 items-center justify-center text-[#6B7280]">
         {icon ?? <Icon className="h-7 w-7" />}
       </div>
       <h3 className="text-base font-semibold text-[#F5F7F6]">{title}</h3>

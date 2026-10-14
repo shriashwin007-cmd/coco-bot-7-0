@@ -10,7 +10,7 @@ import type { WasteReport, ReportStatus, Severity } from '../types'
 import { formatDate, formatSeverity } from '../utils/format'
 
 const STATUSES: ReportStatus[] = ['Open', 'Assigned', 'In Progress', 'Resolved']
-const selectCls = 'rounded-xl border border-[#2A3A30] bg-[#0F1512] px-3 py-2 text-sm text-[#F5F7F6] focus:border-[#B7F34A] focus:outline-none transition-colors'
+const selectCls = 'clay-input border-[#2A3A30] px-3 py-2 text-sm text-[#F5F7F6] focus:border-[#B7F34A] focus:outline-none transition-colors'
 
 export default function ReportsPage() {
   const [reports, setReports] = useState<WasteReport[]>(() => loadReports())
@@ -51,7 +51,7 @@ export default function ReportsPage() {
         {STATUSES.map((s) => (
           <div key={s} className="rounded-2xl border border-[#223027] bg-[#141A17] p-5 hover:border-[#2A3A30] transition-colors">
             <div className="flex items-center justify-between">
-              <Badge kind="status" value={s} size="sm" dot />
+              <Badge kind="status" value={s} size="sm" />
               <span className="text-3xl font-semibold text-[#F5F7F6] tabular-nums">{summary[s]}</span>
             </div>
           </div>
@@ -63,7 +63,7 @@ export default function ReportsPage() {
           <div className="relative flex-1 min-w-[220px]">
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
             <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search reports…"
-              className="w-full rounded-xl border border-[#2A3A30] bg-[#0F1512] py-2.5 pl-10 pr-3 text-sm text-[#F5F7F6] placeholder:text-[#6B7280] focus:border-[#B7F34A] focus:outline-none focus:ring-2 focus:ring-[#B7F34A]/20 transition-all" />
+              className="w-full clay-input border-[#2A3A30] py-2.5 pl-10 pr-3 text-sm text-[#F5F7F6] placeholder:text-[#6B7280] focus:border-[#B7F34A] focus:outline-none focus:ring-2 focus:ring-[#B7F34A]/20 transition-all" />
           </div>
           <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as ReportStatus | 'all')} className={selectCls} aria-label="Filter by status">
             <option value="all">All statuses</option>
@@ -100,10 +100,10 @@ export default function ReportsPage() {
                       <p className="mt-0.5 max-w-[260px] truncate text-xs text-[#6B7280]">{r.description}</p>
                     </td>
                     <td className="py-3 pr-4 text-xs text-[#9CA3AF] max-w-[150px] truncate">{r.location || '—'}</td>
-                    <td className="py-3 pr-4"><Badge kind="severity" value={r.severity} size="sm" dot /></td>
+                    <td className="py-3 pr-4"><Badge kind="severity" value={r.severity} size="sm" /></td>
                     <td className="py-3 pr-4">
                       <select value={r.status} onChange={(e) => updateStatus(r.id, e.target.value as ReportStatus)}
-                        className="rounded-lg border border-[#2A3A30] bg-[#0F1512] px-2 py-1.5 text-xs text-[#F5F7F6] focus:border-[#B7F34A] focus:outline-none" aria-label="Change report status">
+                        className="clay-input border-[#2A3A30] px-2 py-1.5 text-xs text-[#F5F7F6] focus:border-[#B7F34A] focus:outline-none" aria-label="Change report status">
                         {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                       </select>
                     </td>
@@ -128,8 +128,8 @@ export default function ReportsPage() {
         {detail && (
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
-              <Badge kind="severity" value={detail.severity} dot />
-              <Badge kind="status" value={detail.status} dot />
+              <Badge kind="severity" value={detail.severity} />
+              <Badge kind="status" value={detail.status} />
               {detail.source && <Badge kind="source" value={detail.source} />}
             </div>
             <dl className="space-y-2.5 text-sm">

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { X } from 'lucide-react'
 import Button from './Button'
 
 interface ModalProps {
@@ -39,27 +40,25 @@ export default function Modal({
       onClick={closeOnOverlayClick ? onClose : undefined}
     >
       <div
-        className={`w-full ${sizes[size]} rounded-2xl border border-[#223027] bg-[#141A17] shadow-xl animate-slide-up`}
+        className={`clay w-full ${sizes[size]} animate-slide-up`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-[#223027] px-5 py-4">
+        <div className="flex items-center justify-between border-b border-white/[0.06] px-6 py-5">
           <h3 id="modal-title" className="text-base font-semibold text-[#F5F7F6]">
             {title}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-[#9CA3AF] hover:bg-[#18201C] hover:text-[#F5F7F6] transition-colors focus-visible:ring-2 focus-visible:ring-[#B7F34A]"
+            className="clay-chip p-2 text-[#9CA3AF] hover:text-[#F5F7F6] transition-all focus-visible:ring-2 focus-visible:ring-[#B7F34A]"
             aria-label="Close"
           >
-            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
+            <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="px-5 py-5">{children}</div>
+        <div className="px-6 py-6">{children}</div>
         {footer && (
-          <div className="flex items-center justify-end gap-2 border-t border-[#223027] px-5 py-4">
+          <div className="flex items-center justify-end gap-2 border-t border-white/[0.06] px-6 py-5">
             {footer}
           </div>
         )}

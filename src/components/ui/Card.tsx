@@ -5,21 +5,20 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
   title?: string
   subtitle?: string
   action?: ReactNode
-  bordered?: boolean
   hoverable?: boolean
 }
 
 export default function Card({
   children, title, subtitle, action,
-  bordered = true, hoverable = false, className = '', ...rest
+  hoverable = false, className = '', ...rest
 }: CardProps) {
   return (
     <div
-      className={`rounded-2xl transition-all duration-200 ${bordered ? 'border border-[#223027] bg-[#141A17]' : ''} ${hoverable ? 'hover:border-[#2A3A30] hover:shadow-lg' : ''} ${className}`}
+      className={`clay transition-all duration-200 ${hoverable ? 'hover:brightness-[1.07]' : ''} ${className}`}
       {...rest}
     >
       {(title || subtitle || action) && (
-        <div className="px-5 py-4 border-b border-[#223027] flex items-start justify-between gap-4">
+        <div className="px-6 py-5 border-b border-white/[0.06] flex items-start justify-between gap-4">
           <div className="min-w-0">
             {title && <h2 className="text-base font-semibold text-[#F5F7F6]">{title}</h2>}
             {subtitle && <p className="mt-1 text-sm text-[#9CA3AF]">{subtitle}</p>}
@@ -27,7 +26,7 @@ export default function Card({
           {action ? <div className="shrink-0 ml-4">{action}</div> : null}
         </div>
       )}
-      <div className="p-5">{children}</div>
+      <div className="p-6">{children}</div>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Outlet, useLocation, Link } from 'react-router-dom'
-import { Leaf } from 'lucide-react'
+import { Leaf, FlaskConical } from 'lucide-react'
 import Sidebar from './Sidebar'
 
 const titles: Record<string, { title: string; subtitle: string }> = {
@@ -45,8 +45,8 @@ export default function AppLayout() {
           </div>
           <div className="flex items-center gap-3 text-sm text-[#9CA3AF] shrink-0">
             <span className="hidden sm:inline tabular-nums">{new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</span>
-            <span className="rounded-full border border-[#F59E0B4D] bg-[#F59E0B1A] px-2.5 py-1 text-[11px] font-medium text-[#F59E0B] flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B] animate-pulse-soft" />
+            <span className="clay-badge rounded-full border border-[#F59E0B4D] bg-[#F59E0B1A] px-3 py-1 text-[11px] font-semibold tracking-wide text-[#F59E0B] flex items-center gap-1.5">
+              <FlaskConical className="h-3 w-3" />
               Demo Environment
             </span>
           </div>

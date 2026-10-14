@@ -1,4 +1,4 @@
-import { Code2, Mail, Cpu, Database, Map, Shield, ArrowRight } from 'lucide-react'
+import { Code2, Mail, Cpu, Database, Map, Shield, ArrowRight, Check } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Card, { CardSection } from '../components/ui/Card'
 import Button from '../components/ui/Button'
@@ -43,7 +43,7 @@ export default function AboutPage() {
         {features.map((f) => (
           <Card key={f.title} title={f.title} hoverable>
             <div className="flex gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#B7F34A1A] text-[#B7F34A]">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center clay-icon-tile text-[#B7F34A]">
                 <f.icon className="h-5 w-5" />
               </div>
               <p className="text-sm leading-relaxed text-[#9CA3AF]">{f.text}</p>
@@ -55,8 +55,8 @@ export default function AboutPage() {
       <Card title="Technology stack" subtitle="Modern, maintainable, production-ready tooling.">
         <ul className="grid gap-2.5 sm:grid-cols-2">
           {stack.map((s) => (
-            <li key={s} className="flex items-center gap-2.5 rounded-xl border border-[#223027] bg-[#0F1512] px-3.5 py-2.5 text-sm text-[#F5F7F6]">
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#B7F34A]" />
+            <li key={s} className="clay-chip flex items-center gap-2.5 rounded-2xl border border-[#223027] bg-[#0F1512] px-4 py-3 text-sm font-medium text-[#F5F7F6]">
+              <Check className="h-4 w-4 shrink-0 text-[#B7F34A]" />
               {s}
             </li>
           ))}

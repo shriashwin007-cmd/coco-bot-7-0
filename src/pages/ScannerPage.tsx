@@ -130,14 +130,14 @@ export default function ScannerPage() {
               <input
                 id="scan-location" type="text" value={location} onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g. Demo Area – Main Street"
-                className="mt-1.5 w-full rounded-xl border border-[#2A3A30] bg-[#0F1512] px-3.5 py-2.5 text-sm text-[#F5F7F6] placeholder:text-[#6B7280] focus:border-[#B7F34A] focus:outline-none focus:ring-2 focus:ring-[#B7F34A]/20 transition-all"
+                className="mt-1.5 w-full clay-input border-[#2A3A30] px-3.5 py-2.5 text-sm text-[#F5F7F6] placeholder:text-[#6B7280] focus:border-[#B7F34A] focus:outline-none focus:ring-2 focus:ring-[#B7F34A]/20 transition-all"
               />
               <p className="mt-1.5 text-[11px] text-[#6B7280]">Used for map markers and report context. Never inferred from the photo.</p>
             </div>
           </CardSection>
         </Card>
 
-        <Card title="Analysis results" subtitle={result ? `Scan ${scanId ?? ''}` : 'Results appear after analysis.'} action={source ? <Badge kind="source" value={source} dot /> : undefined}>
+        <Card title="Analysis results" subtitle={result ? `Scan ${scanId ?? ''}` : 'Results appear after analysis.'} action={source ? <Badge kind="source" value={source} /> : undefined}>
           {!result && !loading && (
             <div className="flex flex-col items-center justify-center py-14 text-center">
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0F1512] text-[#6B7280]">
@@ -157,8 +157,8 @@ export default function ScannerPage() {
           {result && source && (
             <CardSection>
               <div className="flex flex-wrap items-center gap-2">
-                <Badge kind="cleanliness" value={result.cleanliness} dot />
-                <Badge kind="severity" value={result.severity} dot />
+                <Badge kind="cleanliness" value={result.cleanliness} />
+                <Badge kind="severity" value={result.severity} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-xl border border-[#223027] bg-[#0F1512] p-3.5">
@@ -193,7 +193,7 @@ export default function ScannerPage() {
                   <span className="text-sm font-semibold text-[#B7F34A] tabular-nums">{Math.round(result.confidence * 100)}%</span>
                 </div>
               )}
-              <div className="rounded-xl border border-[#B7F34A4D] bg-[#B7F34A1A] p-3.5">
+              <div className="clay-chip border-[#B7F34A4D] p-4">
                 <p className="text-[11px] uppercase tracking-wider text-[#B7F34A]">Recommended action</p>
                 <p className="mt-1.5 text-sm leading-relaxed text-[#F5F7F6]">{result.recommended_action}</p>
               </div>

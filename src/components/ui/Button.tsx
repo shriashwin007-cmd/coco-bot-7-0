@@ -10,17 +10,17 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants = {
-  primary: 'bg-[#B7F34A] text-[#0B0F0D] hover:bg-[#D9FB8A] active:bg-[#9DD63E] border border-[#B7F34A]',
-  secondary: 'bg-[#141A17] text-[#F5F7F6] hover:bg-[#18201C] active:bg-[#1C2620] border border-[#2A3A30]',
-  ghost: 'bg-transparent text-[#F5F7F6] hover:bg-[#141A17] active:bg-[#18201C] border border-transparent',
-  danger: 'bg-transparent text-[#EF4444] hover:bg-[#EF44441A] active:bg-[#EF444426] border border-[#EF44444D]',
-  outline: 'bg-transparent text-[#B7F34A] hover:bg-[#B7F34A1A] active:bg-[#B7F34A26] border border-[#B7F34A4D]',
+  primary: 'clay-btn-primary',
+  secondary: 'clay-btn-secondary',
+  ghost: 'clay-btn-ghost',
+  danger: 'clay-btn-danger',
+  outline: 'clay-btn-outline',
 }
 
 const sizes = {
-  sm: 'px-3 py-1.5 text-xs gap-1.5',
-  md: 'px-4 py-2 text-sm gap-2',
-  lg: 'px-5 py-2.5 text-base gap-2',
+  sm: 'px-4 py-2 text-xs gap-1.5',
+  md: 'px-5 py-2.5 text-sm gap-2',
+  lg: 'px-6 py-3 text-base gap-2',
 }
 
 export default function Button({
@@ -37,7 +37,7 @@ export default function Button({
   const isDisabled = disabled || loading
   return (
     <button
-      className={`inline-flex items-center justify-center rounded-xl font-medium transition-all duration-150 focus-visible:ring-2 focus-visible:ring-[#B7F34A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0F0D] disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`clay-btn inline-flex items-center justify-center font-medium focus-visible:ring-2 focus-visible:ring-[#B7F34A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0F0D] disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${sizes[size]} ${className}`}
       disabled={isDisabled}
       {...rest}
     >

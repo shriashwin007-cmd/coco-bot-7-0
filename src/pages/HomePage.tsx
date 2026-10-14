@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Leaf, ScanLine, Activity, Target, ArrowRight, CheckCircle2, Shield, MapPin } from 'lucide-react'
+import { Leaf, ScanLine, Activity, Target, ArrowRight, CheckCircle2, Shield, MapPin, Sparkles } from 'lucide-react'
 import Button from '../components/ui/Button'
 import Card, { CardSection } from '../components/ui/Card'
 
@@ -41,7 +41,7 @@ export default function HomePage() {
       <header className="sticky top-0 z-30 border-b border-[#223027] bg-[#0B0F0D]/85 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#B7F34A1A] text-[#B7F34A]">
+            <div className="flex h-8 w-8 items-center justify-center clay-icon-tile text-[#B7F34A]">
               <Leaf className="h-5 w-5" />
             </div>
             <span className="text-lg font-semibold text-[#F5F7F6]">TrashBots</span>
@@ -62,11 +62,8 @@ export default function HomePage() {
         <section className="mx-auto relative max-w-7xl px-6 py-20 md:py-28">
           <div className="mx-auto grid max-w-4xl gap-10 text-center md:grid-cols-2 md:max-w-6xl md:text-left">
             <div className="flex flex-col items-center md:items-start">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#B7F34A4D] bg-[#B7F34A1A] px-3 py-1 text-xs font-medium text-[#B7F34A]">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inset-0 h-1.5 w-1.5 rounded-full bg-[#B7F34A] animate-pulse-soft" />
-                  <span className="relative h-1.5 w-1.5 rounded-full bg-[#B7F34A]" />
-                </span>
+              <div className="clay-badge inline-flex items-center gap-2 rounded-full border border-[#B7F34A4D] bg-[#B7F34A1A] px-4 py-1.5 text-xs font-semibold tracking-wide text-[#B7F34A]">
+                <Sparkles className="h-3.5 w-3.5" />
                 AI-Powered Smart Waste Management
               </div>
               <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight md:text-5xl lg:text-6xl">
@@ -118,7 +115,7 @@ export default function HomePage() {
             {features.map((f) => (
               <Card key={f.title} hoverable className="h-full">
                 <CardSection>
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#B7F34A1A] text-[#B7F34A]">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center clay-icon-tile text-[#B7F34A]">
                     <f.icon className="h-6 w-6" />
                   </div>
                   <h3 className="mt-4 text-base font-semibold text-[#F5F7F6]">{f.title}</h3>
@@ -142,7 +139,7 @@ export default function HomePage() {
               <Card key={s.n} hoverable className="h-full">
                 <CardSection>
                   <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#B7F34A1A] text-[#B7F34A] font-mono text-sm font-semibold">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center clay-icon-tile text-[#B7F34A] font-mono text-sm font-semibold">
                       {s.n}
                     </span>
                     <h3 className="text-base font-semibold text-[#F5F7F6]">{s.title}</h3>
@@ -156,7 +153,7 @@ export default function HomePage() {
 
         {/* Trust indicators */}
         <section className="mx-auto max-w-7xl px-6 py-16">
-          <Card bordered={false} className="bg-[#141A17]">
+          <Card className="bg-[#141A17]">
             <CardSection>
               <div className="grid gap-8 md:grid-cols-3">
                 <TrustItem icon={Shield} title="No fabricated predictions" text="Confidence scores and categories only appear when the AI backend provides them." />
@@ -172,7 +169,7 @@ export default function HomePage() {
           <Card className="bg-[#0F1512] border-[#2A3A30]">
             <CardSection>
               <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#B7F34A1A] text-[#B7F34A]">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center clay-icon-tile text-[#B7F34A]">
                   <Leaf className="h-6 w-6" />
                 </div>
                 <div>
@@ -270,7 +267,7 @@ function HeroVisual() {
 function TrustItem({ icon: Icon, title, text }: { icon: any; title: string; text: string }) {
   return (
     <div className="flex gap-3">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#B7F34A1A] text-[#B7F34A]">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center clay-icon-tile text-[#B7F34A]">
         <Icon className="h-5 w-5" />
       </div>
       <div>
