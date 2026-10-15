@@ -3,11 +3,12 @@ COCO BOT 7.0 — real model training on PlantVillage (no Kaggle account needed).
 
 Pipeline
 --------
-1. Download PlantVillage via TensorFlow Datasets (no auth, ~1 GB).
+1. Download PlantVillage from HuggingFace (BrandonFors mirror, train+test splits).
 2. Write a stratified on-disk subset to backend/data/plant_village_subset/
-   (<=450 train + <=80 val images per class, 38 classes).
+   (<=450 train + <=80 val images per class, 38 classes) plus a capped
+   independent test split (<=100/class).
 3. Transfer-learn MobileNetV2 (frozen base -> train head, then unfreeze top).
-4. Evaluate on the held-out split, print honest accuracy.
+4. Evaluate on the held-out split AND the independent test split; print honest accuracy.
 5. Export backend/leaf_disease_model.onnx + backend/labels.txt + backend/metrics.json.
 
 Preprocessing contract (backend/main.py replicates this EXACTLY in NumPy):
@@ -16,7 +17,8 @@ Preprocessing contract (backend/main.py replicates this EXACTLY in NumPy):
 Run (Windows, from backend/):
   .\\.venv-train\\Scripts\\python train_model.py
 
-Training takes ~1-3 h on CPU; run it and leave the machine on.
+Slow connections: the dataset download (~1 GB) can take an hour by itself.
+Training takes another ~1-2 h on CPU. Leave the machine on.
 """
 
 from __future__ import annotations
@@ -27,7 +29,7 @@ import random
 
 import numpy as np
 import tensorflow as tf
-import tensorflow_datasets as tfds
+from datasets import load_dataset
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data", "plant_village_subset")
@@ -36,10 +38,14 @@ MODEL_ONNX = os.path.join(BASE_DIR, "leaf_disease_model.onnx")
 LABELS_TXT = os.path.join(BASE_DIR, "labels.txt")
 METRICS_JSON = os.path.join(BASE_DIR, "metrics.json")
 
+HF_DATASET = "BrandonFors/Plant-Diseases-PlantVillage-Dataset"
+HF_CONFIG = "default"
+
 IMG = 192
 BATCH = 32
 PER_CLASS_TRAIN = 450
 PER_CLASS_VAL = 80
+PER_CLASS_TEST = 100
 EPOCHS_HEAD = 10
 EPOCHS_FINE = 5
 SEED = 7
@@ -49,68 +55,85 @@ def pretty(name: str) -> str:
     return name.replace("___", " — ").replace("__", " ").replace("_", " ")
 
 
-def build_subset() -> tuple[list[str], int]:
-    """One decode pass over TFDS; write stratified JPEG folders. Returns (labels, n_train)."""
+def write_split(hf_split: str, out_name: str, per_class_cap: int) -> dict[str, int]:
+    """Decode one HF split once; write stratified JPEG folders. Returns counts."""
+    print(f"Loading HF split '{hf_split}' (downloads on first run)...")
+    ds = load_dataset(HF_DATASET, HF_CONFIG, split=hf_split)
+    buckets: dict[int, list] = {}
+    for ex in ds:
+        buckets.setdefault(int(ex["label"]), []).append(ex["image"])
+    counts: dict[str, int] = {}
+    for label_id, imgs in sorted(buckets.items()):
+        # Per-class seed: identical order every run, independent of class order,
+        # so the validation slice below can skip exactly these train images.
+        random.Random(f"{SEED}-{label_id}").shuffle(imgs)
+        chosen = imgs[:per_class_cap]
+        raw = ds.features["label"].int2str(label_id)
+        d = os.path.join(DATA_DIR, out_name, raw)
+        os.makedirs(d, exist_ok=True)
+        for j, img in enumerate(chosen):
+            img.convert("RGB").save(os.path.join(d, f"{j:04d}.jpg"), "JPEG", quality=92)
+        counts[raw] = len(chosen)
+    print(f"  {out_name}: {sum(counts.values())} images across {len(counts)} classes")
+    return counts
+
+
+def build_subset() -> list[str]:
+    """Write stratified train/val/test folders + labels.txt (sorted folder order)."""
     if os.path.exists(os.path.join(DATA_DIR, "train")):
-        labels = sorted(os.listdir(os.path.join(DATA_DIR, "train")))
-        n = sum(len(files) for _, _, files in os.walk(os.path.join(DATA_DIR, "train")))
-        print(f"Subset already on disk: {len(labels)} classes, {n} train images.")
-        return labels, n
+        labels = open(LABELS_TXT, encoding="utf-8").read().splitlines()
+        print(f"Subset already on disk: {len(labels)} classes.")
+        return labels
 
-    print("Downloading PlantVillage via TFDS (one-time, ~1 GB)...")
-    ds, info = tfds.load("plant_village", split="train", with_info=True, as_supervised=False)
-    raw_labels: list[str] = info.features["label"].names
-    print(f"TFDS ready: {info.splits['train'].num_examples} images, {len(raw_labels)} classes.")
+    write_split("train", "train", PER_CLASS_TRAIN)
+    # Held-out val comes from the same train split (different images per class).
+    # Re-read buckets cheaply: take the NEXT images after the train cap.
+    print("Loading HF train split again for the held-out validation slice...")
+    ds = load_dataset(HF_DATASET, HF_CONFIG, split="train")
+    buckets: dict[int, list] = {}
+    for ex in ds:
+        buckets.setdefault(int(ex["label"]), []).append(ex["image"])
+    for label_id, imgs in sorted(buckets.items()):
+        random.Random(f"{SEED}-{label_id}").shuffle(imgs)  # same order as write_split
+        chosen = imgs[PER_CLASS_TRAIN:PER_CLASS_TRAIN + PER_CLASS_VAL]
+        raw = ds.features["label"].int2str(label_id)
+        d = os.path.join(DATA_DIR, "validation", raw)
+        os.makedirs(d, exist_ok=True)
+        for j, img in enumerate(chosen):
+            img.convert("RGB").save(os.path.join(d, f"{j:04d}.jpg"), "JPEG", quality=92)
+    del ds
 
-    buckets: dict[int, list[np.ndarray]] = {i: [] for i in range(len(raw_labels))}
-    for ex in tfds.as_numpy(ds):
-        buckets[int(ex["label"])].append(ex["image"])
+    write_split("test", "test_hf", PER_CLASS_TEST)
 
-    rng = random.Random(SEED)
-    labels = [pretty(n) for n in raw_labels]
-    n_train = 0
-    for idx, raw in enumerate(raw_labels):
-        imgs = buckets[idx]
-        rng.shuffle(imgs)
-        train_imgs = imgs[:PER_CLASS_TRAIN]
-        val_imgs = imgs[PER_CLASS_TRAIN:PER_CLASS_TRAIN + PER_CLASS_VAL]
-        for split, subset in (("train", train_imgs), ("validation", val_imgs)):
-            d = os.path.join(DATA_DIR, split, raw)
-            os.makedirs(d, exist_ok=True)
-            for j, img in enumerate(subset):
-                tf.keras.utils.save_img(os.path.join(d, f"{j:04d}.jpg"), img)
-        n_train += len(train_imgs)
-        print(f"  {raw}: {len(train_imgs)} train / {len(val_imgs)} val")
-
+    # labels.txt MUST follow image_dataset_from_directory's sorted-folder order.
+    ordered = sorted(os.listdir(os.path.join(DATA_DIR, "train")))
+    labels = [pretty(r) for r in ordered]
     with open(LABELS_TXT, "w", encoding="utf-8") as f:
         f.write("\n".join(labels) + "\n")
-    print(f"Subset written to {DATA_DIR}; labels -> {LABELS_TXT}")
-    return labels, n_train
+    print(f"labels.txt written ({len(labels)} classes, sorted folder order).")
+    return labels
 
 
-def make_datasets() -> tuple[tf.data.Dataset, tf.data.Dataset, int]:
-    train_ds = tf.keras.utils.image_dataset_from_directory(
-        os.path.join(DATA_DIR, "train"),
-        image_size=(IMG, IMG),
-        batch_size=BATCH,
-        shuffle=True,
-        seed=SEED,
-    )
-    val_ds = tf.keras.utils.image_dataset_from_directory(
-        os.path.join(DATA_DIR, "validation"),
-        image_size=(IMG, IMG),
-        batch_size=BATCH,
-        shuffle=False,
-    )
-    n_classes = len(train_ds.class_names)
-    # image_dataset_from_directory sorts folders alphabetically; TFDS label ids
-    # are already alphabetical, so index order matches labels.txt. Verify:
-    raw_sorted = sorted(os.listdir(os.path.join(DATA_DIR, "train")))
-    assert [pretty(r) for r in raw_sorted] == open(LABELS_TXT, encoding="utf-8").read().splitlines(), \
+def make_datasets() -> tuple[tf.data.Dataset, tf.data.Dataset, tf.data.Dataset, int]:
+    def _load(sub: str, shuffle: bool) -> tf.data.Dataset:
+        ds = tf.keras.utils.image_dataset_from_directory(
+            os.path.join(DATA_DIR, sub),
+            image_size=(IMG, IMG),
+            batch_size=BATCH,
+            shuffle=shuffle,
+            seed=SEED,
+        )
+        return ds
+
+    train_raw = _load("train", True)
+    ordered_labels = [pretty(c) for c in train_raw.class_names]
+    assert ordered_labels == open(LABELS_TXT, encoding="utf-8").read().splitlines(), \
         "Label order mismatch between folders and labels.txt!"
-    train_ds = train_ds.prefetch(tf.data.AUTOTUNE)
-    val_ds = val_ds.prefetch(tf.data.AUTOTUNE)
-    return train_ds, val_ds, n_classes
+
+    train_ds = train_raw.prefetch(tf.data.AUTOTUNE)
+    val_ds = _load("validation", False).prefetch(tf.data.AUTOTUNE)
+    test_ds = _load("test_hf", False).prefetch(tf.data.AUTOTUNE)
+    return train_ds, val_ds, test_ds, len(ordered_labels)
 
 
 def build_model(n_classes: int) -> tuple[tf.keras.Model, tf.keras.Model]:
@@ -134,9 +157,10 @@ def build_model(n_classes: int) -> tuple[tf.keras.Model, tf.keras.Model]:
 
 def main() -> None:
     tf.random.set_seed(SEED)
-    labels, n_train = build_subset()
-    train_ds, val_ds, n_classes = make_datasets()
-    print(f"Classes: {n_classes}, train images capped at ~{n_train}")
+    np.random.seed(SEED)
+    build_subset()
+    train_ds, val_ds, test_ds, n_classes = make_datasets()
+    print(f"Classes: {n_classes}")
 
     model, base = build_model(n_classes)
 
@@ -153,8 +177,10 @@ def main() -> None:
                   loss="sparse_categorical_crossentropy", metrics=["accuracy"])
     model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS_FINE)
 
-    loss, acc = model.evaluate(val_ds)
-    print(f"\nHELD-OUT VALIDATION ACCURACY: {acc:.4f} (loss {loss:.4f})")
+    val_loss, val_acc = model.evaluate(val_ds)
+    test_loss, test_acc = model.evaluate(test_ds)
+    print(f"\nHELD-OUT VAL ACCURACY:  {val_acc:.4f} (loss {val_loss:.4f})")
+    print(f"INDEPENDENT TEST ACCURACY: {test_acc:.4f} (loss {test_loss:.4f})")
 
     model.save(MODEL_KERAS)
     print(f"Saved {MODEL_KERAS}")
@@ -168,13 +194,14 @@ def main() -> None:
     print(f"Saved {MODEL_ONNX} ({os.path.getsize(MODEL_ONNX) / 1e6:.1f} MB)")
 
     metrics = {
-        "model": "MobileNetV2 transfer learning on PlantVillage subset",
+        "model": "MobileNetV2 transfer learning on PlantVillage (HF mirror)",
+        "dataset": HF_DATASET,
         "image_size": IMG,
         "classes": n_classes,
         "labels_file": "labels.txt",
-        "validation_accuracy": round(float(acc), 4),
-        "validation_loss": round(float(loss), 4),
-        "note": "Accuracy measured on the held-out stratified split, not training data.",
+        "validation_accuracy": round(float(val_acc), 4),
+        "independent_test_accuracy": round(float(test_acc), 4),
+        "note": "Accuracy measured on held-out data, never on training data.",
     }
     with open(METRICS_JSON, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)

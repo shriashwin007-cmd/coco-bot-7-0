@@ -16,12 +16,20 @@ export interface LeafMetrics {
   pixels_analysed: number
 }
 
+export interface RunnerUp {
+  label: string
+  confidence: number
+}
+
 export interface AIAnalysisResult {
   predicted_label: string
   status: PlantStatus
-  /** 0-1 leaf-greenness health index (visual vigour, NOT a disease probability). */
-  model_score: number | null
-  score_description: string
+  /** Softmax confidence for the top class (0-1), or null in demo mode. */
+  confidence: number | null
+  confidence_description: string
+  crop?: string
+  condition?: string
+  runner_up?: RunnerUp | null
   explanation: string
   recommended_next_step: string
   metrics?: LeafMetrics | null

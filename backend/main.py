@@ -52,13 +52,14 @@ from __future__ import annotations
 
 import os
 from io import BytesIO
+import json
 
 import numpy as np
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 
-BACKEND_NAME = "cocobot-pixel-analysis v1"
+BACKEND_NAME = "cocobot-leaf-disease-onnx v1"
 SUPPORTED_LABELS = ["healthy", "needs_inspection"]
 
 ALLOWED_TYPES = {"image/jpeg", "image/jpg", "image/png", "image/webp"}
@@ -67,14 +68,37 @@ MAX_BYTES = 8 * 1024 * 1024
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 H5_PATH = os.path.join(BASE_DIR, "leaf_disease_model.h5")
 LABELS_PATH = os.path.join(BASE_DIR, "labels.txt")
+ONNX_PATH = os.path.join(BASE_DIR, "leaf_disease_model.onnx")
+METRICS_PATH = os.path.join(BASE_DIR, "metrics.json")
+
+# Real trained classifier (produced by train_model.py). Preferred over the
+# pixel heuristic whenever present.
+try:
+    import inference as leaf_disease
+except Exception:  # pragma: no cover - only if numpy/PIL missing
+    leaf_disease = None
 
 
 def tf_model_present() -> dict:
-    """Report whether a future TensorFlow model hook files exist (informational only)."""
+    """Report which model artifacts exist (informational only)."""
     return {
         "leaf_disease_model.h5_found": os.path.exists(H5_PATH),
         "labels.txt_found": os.path.exists(LABELS_PATH),
+        "leaf_disease_model.onnx_found": os.path.exists(ONNX_PATH),
+        "trained_classifier_active": bool(
+            leaf_disease is not None and leaf_disease.model_available()
+        ),
     }
+
+
+def read_metrics() -> dict | None:
+    try:
+        if os.path.exists(METRICS_PATH):
+            with open(METRICS_PATH, encoding="utf-8") as f:
+                return json.load(f)
+    except Exception:
+        return None
+    return None
 
 
 def read_labels_file() -> list[str] | None:
@@ -249,11 +273,15 @@ def build_result(metrics: dict) -> dict:
 @app.get("/api/health", include_in_schema=False)
 def health() -> dict:
     custom_labels = read_labels_file()
+    m = read_metrics()
+    trained = bool(leaf_disease is not None and leaf_disease.model_available())
     return {
         "status": "ok",
         "backend": BACKEND_NAME,
+        "mode": "trained_classifier" if trained else "pixel_heuristic_fallback",
         "supported_labels": custom_labels or SUPPORTED_LABELS,
-        "tf_model_hook": tf_model_present(),
+        "model_hook": tf_model_present(),
+        "metrics": m,
         "note": "Software demonstration only. No physical sensors or hardware connected.",
     }
 
@@ -262,15 +290,19 @@ def health() -> dict:
 @app.get("/api/labels", include_in_schema=False)
 def labels() -> dict:
     custom_labels = read_labels_file()
-    return {
-        "supported_labels": custom_labels or SUPPORTED_LABELS,
-        "note": (
-            "Only healthy vs needs-inspection classification is supported. "
-            "Specific disease names are not diagnosed by this backend."
-            if custom_labels is None
-            else "Custom labels.txt detected — these labels come from your file."
-        ),
-    }
+    trained = bool(leaf_disease is not None and leaf_disease.model_available())
+    if trained:
+        note = (
+            f"Trained classifier active: {len(custom_labels or [])} PlantVillage classes "
+            f"(crop + condition). Healthy/needs-inspection status is derived from the "
+            f"predicted class name."
+        )
+    else:
+        note = (
+            "Only healthy vs needs-inspection classification is available (pixel fallback). "
+            "Run train_model.py to enable the full trained classifier."
+        )
+    return {"supported_labels": custom_labels or SUPPORTED_LABELS, "note": note}
 
 
 @app.post("/analyze")
@@ -292,5 +324,36 @@ async def analyze(file: UploadFile = File(...)) -> dict:
     except Exception:
         raise HTTPException(status_code=400, detail="Could not read the image file.")
 
+    # Preferred: the real trained classifier.
+    if leaf_disease is not None and leaf_disease.model_available():
+        try:
+            r = leaf_disease.run_inference(image)
+            r["analysis_source"] = "REAL AI"
+            r["model_info"] = {
+                "backend": BACKEND_NAME,
+                "architecture": r.get("model"),
+                "trained_classes": len(read_labels_file() or []),
+                "metrics": read_metrics(),
+                "note": (
+                    "Genuine inference from a MobileNetV2 model transfer-learned on "
+                    "PlantVillage. Supported labels come from labels.txt."
+                ),
+            }
+            return r
+        except Exception as e:  # inference failed -> honest error, no fabrication
+            raise HTTPException(status_code=500, detail=f"Model inference failed: {e}")
+
+    # Fallback: pixel heuristic, clearly labelled in the response.
     metrics = analyse_pixels(image)
-    return build_result(metrics)
+    out = build_result(metrics)
+    out["model_info"] = {
+        "backend": BACKEND_NAME,
+        "mode": "pixel_heuristic_fallback",
+        "note": (
+            "No trained classifier is deployed alongside the service, so a colour-based "
+            "heuristic was used. It supports only healthy vs needs-inspection and cannot "
+            "name specific diseases. Train the model (train_model.py) for full predictions."
+        ),
+        "metrics": read_metrics(),
+    }
+    return out
