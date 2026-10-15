@@ -14,7 +14,10 @@ dist-ssr
 
 # Python backend
 backend/.venv/
+backend/.venv-train/
 backend/__pycache__/
+backend/*.keras
+backend/data/
 backend/*.log
 backend/test-*.jpg
 backend/test-*.log
